@@ -12,6 +12,7 @@ addressPrint:    .asciz "%08x\n"
 numPrint:        .asciz "%d\n"
 sizeTestZero:    .asciz "zero length on create"
 findTest:        .asciz "find test"
+segTest:         .asciz "seg test %d\n"
 
 @
 @ text section
@@ -47,8 +48,6 @@ main:
   mov r0,llist    @ param1 = llist pointer 
   mov r1,#11      @ param2 = data val of 11
   bl add_linked_list
-
-
 
   @ make sure the llist finds the number 11
   mov r0,llist    @ param1 = llist ptr

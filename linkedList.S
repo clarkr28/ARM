@@ -1,5 +1,7 @@
 .data
 
+segTest:  .asciz "segTest %d\n"
+
 @
 @ - Linked list ADT -
 @ - this linked list implementation uses singleNode.S for nodes -
@@ -74,9 +76,10 @@ increment_count:
   ldr r0,[r4,#count]
   add r0,r0,#1
   str r0,[r4,#count]
-
+  
 add_linked_list_done:
   ldmfd sp!,{r4-r5,lr}
+  bx lr
 
 @
 @ int find_ptr_linked_list(llist *llist, void *data)

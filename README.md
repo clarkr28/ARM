@@ -11,10 +11,6 @@ the linked list and node functionality.  As of right now, the node is complete
 and passes all tests, but the linked list is still in progress.
 
 My priority right now is to finish the linked list, then create a
-program to read data into the linked list from a data file.  A third priority is
-to have more detailed documentation in the readme of this repository. :) I have
-been working on this project for a bit on my own, and I am just finally getting
-to putting it on my github account, so I apologize for the lack of
-documentation.
+program to read data into the linked list from a data file. 
 
 

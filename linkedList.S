@@ -7,7 +7,7 @@ segTest:  .asciz "segTest %d\n"
 @ - this linked list implementation uses singleNode.S for nodes -
 @
 @ llist *create_linked_list()
-@ add_linked_list(llist *llist, void *data)
+@ void add_linked_list(llist *llist, void *data)
 @ int find_ptr_linked_list(llist *llist, void *data)
 @ int length_linked_list(llist *llist)
 @ int remove_linked_list(llist *llist, void *data)
@@ -40,7 +40,7 @@ create_linked_list:
   bx lr
 
 @
-@ add_linked_list(llist *llist, void *data)
+@ void add_linked_list(llist *llist, void *data)
 @ take a new data ptr, add it to a node, and add the node to the llist
 @
 .global add_linked_list
@@ -106,8 +106,11 @@ search_llist_loop:
   cmp r0,r4     @ are r0 and r4 pointing to the same thing?
   beq ptr_found @ exit the loop and set return as found
 
+  @ get the next node
+  mov r0,r5     @ param1 = ptr to current node
   bl get_next_single_node
-  b search_llist_loop
+
+  b search_llist_loop @ go to top of the loop (iterate again)
 
 ptr_found:
   mov r0,#1     @ set return code to 1 and leave function
@@ -128,7 +131,6 @@ find_ptr_linked_list_done:
 length_linked_list:
   ldr r0,[r0,#count]  @ load the count from the llist
   bx lr
-
 @
 @ int remove_linked_list(llist *llist, void *data)
 @ find the data ptr in the llist that points to the same object (where

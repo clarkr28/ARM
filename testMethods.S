@@ -12,7 +12,7 @@
 
 passMesg:     .asciz "\x1b[32mPASS\x1b[0m - %s\n"
 failMesg:     .asciz "\x1b[31mFAIL\x1b[0m - %s\n    expected:%d actual:%d\n"
-summaryTitle: .asciz "\nTesting Summary\n"
+summaryTitle: .asciz "\nTesting Summary:\n"
 summaryData:  .asciz "%d Passed - %d Failed\n"
 
 @ offests within the testing object

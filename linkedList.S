@@ -1,6 +1,8 @@
 .data
 
 segTest:  .asciz "segTest %d\n"
+printInt: .asciz "%d "
+newline:  .asciz "\n"
 
 @
 @ - Linked list ADT -
@@ -9,6 +11,7 @@ segTest:  .asciz "segTest %d\n"
 @ llist *create_linked_list()
 @ void add_linked_list(llist *llist, void *data)
 @ int find_ptr_linked_list(llist *llist, void *data)
+@ void print_linked_list(llist *llist)
 @ int length_linked_list(llist *llist)
 @ int remove_linked_list(llist *llist, void *data)
 @ int find_str_linked_list(llist *llist, char *data)
@@ -62,7 +65,7 @@ add_linked_list:
   @ r0 already holds a ptr to the tail
   mov r1,r5         @ set the ptr to the new node as the second param
   bl set_next_single_node @ make the last node's next point to the new node
-  ldr r5,[r4,#tail] @ make tail point to the new node
+  str r5,[r4,#tail] @ make tail point to the new node
 
   b increment_count @ skip to incrementing the count
 
@@ -123,6 +126,43 @@ find_ptr_linked_list_done:
   ldmfd sp!,{r4-r8,lr}
   bx lr
 
+
+@
+@ void print_linked_list(llist *llist)
+@ print each value in the llist to standard output
+@
+.global print_linked_list
+print_linked_list:
+  stmfd sp!,{r4-r8,lr}
+
+  ldr r0,[r0,#head] @ get the ptr to the first node
+
+@ loop through every node in the llist and print it
+print_llist_loop:
+  cmp r0,#0     @ is the node we are on null?
+  beq print_linked_list_done
+
+  mov r5,r0     @ save current node in r5
+  bl get_data_single_node @ get the data from the node
+  mov r1,r0     @ param2 = value to print
+  ldr r0,=printInt  @ param1 = format string to print
+  bl printf     @ print the value
+
+  @ get the next node
+  mov r0,r5     @ param1 = ptr to current node
+  bl get_next_single_node
+
+  b print_llist_loop  @ iterate again
+
+print_linked_list_done:
+  @ print a newline
+  ldr r0,=newline
+  bl printf
+
+  ldmfd sp!,{r4-r8,lr}
+  bx lr
+
+
 @
 @ int length_linked_list(llist *llist)
 @ return the length of the linked list
@@ -174,7 +214,7 @@ remove_node:
   cmp r1,r7         @ head node != node to delete ?
   bne no_head_update
 
-  ldr r0,[r4,#head] @ head ptr = next node
+  str r0,[r4,#head] @ head ptr = next node
   @ since head pointer will be deleted, no prev node exists
   b no_prev_node    
 
@@ -315,7 +355,7 @@ delete_linked_list_no_free:
 delete_loop_no_free:
   cmp r5,#0         @ is the node null?
   beq delete_loop_no_free_done
-
+  
   mov r0,r5         @ move current node to r0
   bl get_next_single_node @ get the next node
   mov r6,r0         @ save the next node to r6
@@ -323,7 +363,12 @@ delete_loop_no_free:
   mov r0,r5         @ move the node to free to r0
   bl delete_single_node @ returns data, but that doesn't need go be freed
 
-  mov r5,r6         @ set the current node to r6 (next node)
+  @ if the current node is the tail, exit the loop
+  ldr r0,[r4,#tail]
+  cmp r5,r0         @ is the current node the tail?
+  beq delete_loop_no_free_done
+
+  mov r5,r6         @ current node = next node (set before iterating again)
   b delete_loop_no_free
 
 delete_loop_no_free_done:
